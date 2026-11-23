@@ -38,12 +38,12 @@ Cm10_func = interp1d(y10, cm10, kind="cubic", fill_value="extrapolate")
 #part 2: Load Scaling
 
 #dummy values (where do i get the rest of these from?)
-b_half = 9.10  #clanker got this from somewhere within the files, gotta double check
+b_half = 9.10  #TODO: clanker got this from somewhere within the files, gotta double check where
 b = 2 * b_half
 S_ref = 2 * quad(c_func, 0, b_half)[0]  #computes definite integral using quad function, y-coord. values from c_func
 #NOTE TO SELF: the quad function returns a tuple, gotta take the first item
 
-#TODO: how do i get these dummy values?
+#TODO: how do i get these dummy values? Anna said they'll come later
 n = 1 #load factor
 W = 1 #aircraft weight
 q = 1 #dynamic pressure
@@ -63,6 +63,37 @@ CL0_wing = (2 / S_ref) * quad(cl0_weight, 0, b_half)[0]
 CL10_wing = (2 / S_ref) * quad(cl10_weight, 0, b_half)[0]
 
 #req. a.o.a. from lift-curve slope
-alpha = 0.0 + (10.0 - 0.0) * (CL_des - CL0_wing) / (CL10_wing - CL0_wing)
+alpha_deg = 0.0 + (10.0 - 0.0) * (CL_des - CL0_wing) / (CL10_wing - CL0_wing)
+alpha_rad = np.radians(alpha_deg)
 
-#2. 
+#2. interpolate distributions at alpha_deg using interp1d (did not want to lambda function it)
+def make_coef_at_flight(c0_func, c10_func):
+    def coef_func(y):
+        return c0_func(y) + (alpha_deg / 10.0) * (c10_func(y) - c0_func(y))
+    return coef_func
+
+#NOTE TO SELF: coefficients for the airfoil, not the entire wing!!!
+Cl_des = make_coef_at_flight(CL0_func, CL10_func)
+Cd_des = make_coef_at_flight(CD0_func, CD10_func)
+Cm_des = make_coef_at_flight(Cm0_func, Cm10_func)
+
+#3. dimensional loads and pitching moment per unit span (formula to put on Overleaf!!)
+def L_prime(y):
+    l_prime = q * c_func(y) * Cl_des(y)
+    return l_prime
+
+def D_prime(y):
+    d_prime = q * c_func(y) * Cd_des(y)
+    return d_prime
+
+def M_prime(y): #at quarter-chord
+    m_prime = q * c_func(y) * Cm_des(y)
+    return m_prime
+
+#4. normal force perp. to chord line
+def N_prime(y):
+    n_prime = L_prime(y) * np.cos(alpha_rad) + D_prime(y) * np.sin(alpha_rad)
+    return n_prime
+
+#part 3: Internal Loads Integration (proper 4.1)
+
