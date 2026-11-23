@@ -38,14 +38,14 @@ Cm10_func = interp1d(y10, cm10, kind="cubic", fill_value="extrapolate")
 #part 2: Load Scaling
 
 #dummy values (where do i get the rest of these from?)
-b_half = 9.10  #TODO: clanker got this from somewhere within the files, gotta double check where
+b_half = 9.10
 b = 2 * b_half
 S_ref = 2 * quad(c_func, 0, b_half)[0] #Overleaf!
 #for S_ref: computes definite integral using quad function, y-coord. values from c_func
 #NOTE TO SELF: the quad function returns a tuple, gotta take the first item
 
 #TODO: how do i get these dummy values? Anna said they'll come later
-n = 1 #load factor
+n = 2.924 #load factor
 W = 1 #aircraft weight
 q = 1 #dynamic pressure
 
