@@ -97,3 +97,43 @@ def N_prime(y):
 
 #part 3: Internal Loads Integration (proper 4.1)
 
+#inputs: dummy inertial load distribution and chordwise positions
+#TODO: change these dummy values later!
+W_wing = 0.1 * W #wing weight
+x_ac_frac = 0.2 #aerodynamic center frac.
+x_ea_frac = 0.3 #elastic (so shear) center frac.
+x_cg_frac = 0.4 #center of gravity frac.
+
+#distributing weight of wing along chord
+def w_inertial(y):
+    return (W_wing / S_ref) * c_func(y)
+
+#pos. of values along chord
+def x_ac(y):
+    return x_ac_frac * c_func(y)
+
+def x_ea(y):
+    return x_ea_frac * c_func(y)
+
+def x_cg(y):
+    return x_cg_frac * c_func(y)
+
+#net distributed vertical load
+def qz(y):
+    return N_prime(y) - n * w_inertial(y)
+
+#net distributed torque
+def t_dist(y):
+    return M_prime(y) + N_prime(y) * (x_ea(y) - x_ac(y)) - n * w_inertial(y) * (x_ea(y) - x_cg(y))
+
+#integrating distributed loads to get shear, bending moment and torsion
+def S(y): #shear
+    return quad(qz, y, b_half)[0]
+
+def M(y): #moment
+    def moment_integrand(theta):
+        return (theta - y) * qz(theta)
+    return quad(moment_integrand, y, b_half)[0]
+
+def T(y): #torque
+    return quad(t_dist, y, b_half)[0]
