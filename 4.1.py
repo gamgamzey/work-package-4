@@ -46,7 +46,7 @@ S_ref = 2 * quad(c_func, 0, b_half)[0] #Overleaf!
 
 #TODO: how do i get these dummy values? Anna said they'll come later
 n = 2.924 #load factor
-W = 1 #aircraft weight
+W = 85064.472 #aircraft weight
 q = 1 #dynamic pressure
 
 #1. wing design load coefficient
