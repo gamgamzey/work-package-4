@@ -4,7 +4,6 @@ import pandas as pd
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
 
-
 #part 1: Aerodynamic Data Import & Interpolation
 
 def load_xflr5_spanwise(filename):
