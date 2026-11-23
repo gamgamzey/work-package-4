@@ -17,7 +17,8 @@ def load_xflr5_spanwise(filename):
     y = right_wing[:, 0]
     chord = right_wing[:, 1]
     cl = right_wing[:, 3]
-    cd = right_wing[:, 4] + right_wing[:, 5]  #total Cd = profile drag Cd + induced drag Cd
+    cd = right_wing[:, 4] + right_wing[:, 5] #Overleaf!
+    #total Cd = profile drag Cd + induced drag Cd
     cm = right_wing[:, 7]  # CmAirf@chord/4
     return y, chord, cl, cd, cm
 
@@ -40,7 +41,8 @@ Cm10_func = interp1d(y10, cm10, kind="cubic", fill_value="extrapolate")
 #dummy values (where do i get the rest of these from?)
 b_half = 9.10  #TODO: clanker got this from somewhere within the files, gotta double check where
 b = 2 * b_half
-S_ref = 2 * quad(c_func, 0, b_half)[0]  #computes definite integral using quad function, y-coord. values from c_func
+S_ref = 2 * quad(c_func, 0, b_half)[0] #Overleaf!
+#for S_ref: computes definite integral using quad function, y-coord. values from c_func
 #NOTE TO SELF: the quad function returns a tuple, gotta take the first item
 
 #TODO: how do i get these dummy values? Anna said they'll come later
@@ -49,7 +51,7 @@ W = 1 #aircraft weight
 q = 1 #dynamic pressure
 
 #1. wing design load coefficient
-CL_des = n * W /(q * S_ref)
+CL_des = n * W /(q * S_ref) #Overleaf!
 
 #inside of the integral for the global wing CL
 def cl0_weight(y):
@@ -59,12 +61,12 @@ def cl10_weight(y):
     return CL10_func(y) * c_func(y)
 
 #global wing CL at alpha = 0 and alpha = 10 deg
-CL0_wing = (2 / S_ref) * quad(cl0_weight, 0, b_half)[0]
-CL10_wing = (2 / S_ref) * quad(cl10_weight, 0, b_half)[0]
+CL0_wing = (2 / S_ref) * quad(cl0_weight, 0, b_half)[0] #Overleaf! (make sure that cl0_weight is inside an integral!)
+CL10_wing = (2 / S_ref) * quad(cl10_weight, 0, b_half)[0] #Overleaf!
 
 #req. a.o.a. from lift-curve slope
-alpha_deg = 0.0 + (10.0 - 0.0) * (CL_des - CL0_wing) / (CL10_wing - CL0_wing)
-alpha_rad = np.radians(alpha_deg)
+alpha_deg = 0.0 + (10.0 - 0.0) * (CL_des - CL0_wing) / (CL10_wing - CL0_wing) #Overleaf!
+alpha_rad = np.radians(alpha_deg) #Overleaf?
 
 #2. interpolate distributions at alpha_deg using interp1d (did not want to lambda function it)
 def make_coef_at_flight(c0_func, c10_func):
@@ -73,26 +75,26 @@ def make_coef_at_flight(c0_func, c10_func):
     return coef_func
 
 #NOTE TO SELF: coefficients for the airfoil, not the entire wing!!!
-Cl_des = make_coef_at_flight(CL0_func, CL10_func)
-Cd_des = make_coef_at_flight(CD0_func, CD10_func)
-Cm_des = make_coef_at_flight(Cm0_func, Cm10_func)
+Cl_des = make_coef_at_flight(CL0_func, CL10_func) #Overleaf! (make sure to use the func. above for the eq.)
+Cd_des = make_coef_at_flight(CD0_func, CD10_func) #Overleaf!
+Cm_des = make_coef_at_flight(Cm0_func, Cm10_func) #Overleaf!
 
 #3. dimensional loads and pitching moment per unit span (formula to put on Overleaf!!)
 def L_prime(y):
-    l_prime = q * c_func(y) * Cl_des(y)
+    l_prime = q * c_func(y) * Cl_des(y) #Overleaf!
     return l_prime
 
 def D_prime(y):
-    d_prime = q * c_func(y) * Cd_des(y)
+    d_prime = q * c_func(y) * Cd_des(y) #Overleaf!
     return d_prime
 
 def M_prime(y): #at quarter-chord
-    m_prime = q * c_func(y) * Cm_des(y)
+    m_prime = q * (c_func(y)**2) * Cm_des(y) #Overleaf!
     return m_prime
 
 #4. normal force perp. to chord line
 def N_prime(y):
-    n_prime = L_prime(y) * np.cos(alpha_rad) + D_prime(y) * np.sin(alpha_rad)
+    n_prime = L_prime(y) * np.cos(alpha_rad) + D_prime(y) * np.sin(alpha_rad) #Overleaf!
     return n_prime
 
 #part 3: Internal Loads Integration (proper 4.1)
@@ -103,6 +105,8 @@ W_wing = 0.1 * W #wing weight
 x_ac_frac = 0.2 #aerodynamic center frac.
 x_ea_frac = 0.3 #elastic (so shear) center frac.
 x_cg_frac = 0.4 #center of gravity frac.
+
+#Overleaf for all functions below!
 
 #distributing weight of wing along chord
 def w_inertial(y):
